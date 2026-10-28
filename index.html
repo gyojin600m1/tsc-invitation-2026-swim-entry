@@ -20,6 +20,7 @@
   --gold:#ffcc66; --green:#7ee2a8;
 }
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+[hidden]{display:none!important}
 html,body{margin:0;padding:0;background:var(--bg);color:var(--text)}
 body{font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans","Hiragino Kaku Gothic ProN","Yu Gothic",Meiryo,sans-serif;
   font-size:14px;line-height:1.5;overflow-x:hidden;padding-bottom:env(safe-area-inset-bottom)}
@@ -382,15 +383,20 @@ function searchSw(q){
   };
   return list.map(s => [score(s), s]).filter(x => x[0] >= 0).sort((a, b) => a[0] - b[0] || a[1].no - b[1].no).map(x => x[1]);
 }
+// 入力欄は描き直さない（日本語入力の変換中に入力欄を作り直すと変換が切れる）。打つたびに #L の中だけ替える。
 function viewSw(){
-  const list = searchSw(ST.q);
-  const gk = KNOWN_G;
-  let h = `<div class="field"><input id="q" type="search" inputmode="search" enterkeyhint="search" autocomplete="off"
-     placeholder="名前・ひらがな・チーム・選手番号" value="${esc(ST.q)}" aria-label="選手を検索">${ST.q ? '<button id="qx" aria-label="検索を消す">✕</button>' : ""}</div>
+  return `<div class="field"><input id="q" type="search" inputmode="search" enterkeyhint="search" autocomplete="off"
+     placeholder="名前・ひらがな・チーム・選手番号" value="${esc(ST.q)}" aria-label="選手を検索"><button id="qx" aria-label="検索を消す"${ST.q ? "" : " hidden"}>✕</button></div>
    <div class="seg" role="group" aria-label="男女">
      <button data-g="all" class="${ST.g === "all" ? "on" : ""}">すべて</button>
      <button data-g="m" class="m ${ST.g === "m" ? "on" : ""}">🔵男子</button>
-     <button data-g="f" class="f ${ST.g === "f" ? "on" : ""}">🔴女子</button></div>`;
+     <button data-g="f" class="f ${ST.g === "f" ? "on" : ""}">🔴女子</button></div>
+   <div id="L">${swList()}</div>`;
+}
+function swList(){
+  const list = searchSw(ST.q);
+  const gk = KNOWN_G;
+  let h = "";
   if(!ST.q && ST.g === "all"){
     h += `<div class="stats"><div class="stat"><b>${D.meet.official.swimmers.toLocaleString()}</b><span>選手</span></div>
       <div class="stat"><b>${D.meet.official.teams}</b><span>団体</span></div>
@@ -411,11 +417,14 @@ function viewSw(){
 /* ---------- チーム ---------- */
 function viewTm(){
   if(ST.team != null) return viewTeam(TEAMS[ST.team]);
+  return `<div class="field"><input id="tq" type="search" inputmode="search" autocomplete="off" placeholder="チーム名で絞り込む"
+      value="${esc(ST.tq)}" aria-label="チームを検索"><button id="tqx" aria-label="検索を消す"${ST.tq ? "" : " hidden"}>✕</button></div>
+    <div id="L">${tmList()}</div>`;
+}
+function tmList(){
   const nq = norm(ST.tq), hira = isHira(nq);
   const list = TEAMS.filter(t => !nq || norm(t.name).includes(nq) || (hira && kanaMatch(t.name, nq)));
-  let h = `<div class="field"><input id="tq" type="search" inputmode="search" autocomplete="off" placeholder="チーム名で絞り込む"
-      value="${esc(ST.tq)}" aria-label="チームを検索">${ST.tq ? '<button id="tqx" aria-label="検索を消す">✕</button>' : ""}</div>
-    <div class="count"><b>${list.length}</b> 団体 <span style="color:var(--dim)">（選手番号順）</span></div>`;
+  let h = `<div class="count"><b>${list.length}</b> 団体 <span style="color:var(--dim)">（選手番号順）</span></div>`;
   h += list.map(t => {
     const m = t.members.filter(s => s.g === "男子").length, f = t.members.filter(s => s.g === "女子").length;
     return `<button class="tm" data-team="${t.id}"><span class="nm">${esc(t.name)}${t.note ? `<small>${esc(t.note)}</small>` : `<small>No.${t.members[0].no}〜</small>`}</span>
@@ -486,15 +495,27 @@ function viewEv(p){
     return h;
   }
   if(v.r){
+    if(v.r.length > 10)
+      h += `<div class="field"><input id="evq" type="search" inputmode="search" autocomplete="off" placeholder="この種目の中で名前・チームを探す"
+        value="${esc(ST.evq)}" aria-label="この種目の中を探す"><button id="evqx" aria-label="検索を消す"${ST.evq ? "" : " hidden"}>✕</button></div>
+        <div class="seg"><button data-sort="rank" class="${ST.evSort === "rank" ? "on" : ""}">順位順</button>
+        <button data-sort="heat" class="${ST.evSort === "heat" ? "on" : ""}">組・レーン順</button></div>`;
+    h += `<div id="L">${evList(p)}</div>`;
+  }
+  if(v.s){
+    h += evStart(p, v);
+  }
+  return h;
+}
+function evList(p){
+  const v = D.live[p.no] || {}, gc = gcls(p.gender);
+  let h = "";
+  {
     const rows = v.r.map(r => Object.assign({sw: r[0], rank: r[1], heat: r[2], lane: r[3], time: r[4], note: r[5], grade: r[6]},
                                            rowWho(r[0], r[8], r[9])));
     const big = rows.length > 10;
     let list = rows;
     if(big){
-      h += `<div class="field"><input id="evq" type="search" inputmode="search" autocomplete="off" placeholder="この種目の中で名前・チームを探す"
-        value="${esc(ST.evq)}" aria-label="この種目の中を探す">${ST.evq ? '<button id="evqx" aria-label="検索を消す">✕</button>' : ""}</div>
-        <div class="seg"><button data-sort="rank" class="${ST.evSort === "rank" ? "on" : ""}">順位順</button>
-        <button data-sort="heat" class="${ST.evSort === "heat" ? "on" : ""}">組・レーン順</button></div>`;
       const nq = norm(ST.evq), hira = isHira(nq);
       if(nq) list = list.filter(x => norm(x.name + "|" + x.team + "|" + (x.s ? x.s.kana : "")).includes(nq) || (hira && kanaMatch(x.name, nq)));
       if(ST.evSort === "heat") list = list.slice().sort((a, b) => a.heat - b.heat || a.lane - b.lane);
@@ -515,7 +536,12 @@ function viewEv(p){
         <span class="ex">${ex.join("")}</span></span><span class="tt">${esc(x.time || "")}${x.time && x.note ? `<small>${esc(x.note)}</small>` : ""}</span></button>`;
     }).join("");
   }
-  if(v.s){
+  return h;
+}
+function evStart(p, v){
+  const gc = gcls(p.gender);
+  let h = "";
+  {
     const rows = v.s.map(r => Object.assign({sw: r[0], heat: r[1], lane: r[2], entry: r[3], grade: r[4]}, rowWho(r[0], r[5], r[6])));
     h += `<div class="gsec ${gc}">スタートリスト${v.sg ? `<span class="n">${esc(fmtGen(v.sg))} 発表</span>` : ""}</div>`;
     const heats = [...new Set(rows.map(r => r.heat))].sort((a, b) => a - b);
@@ -666,13 +692,13 @@ M.addEventListener("click", e => {
 });
 let typing = null;
 M.addEventListener("input", e => {
-  const id = e.target.id; if(!["q", "tq", "evq"].includes(id)) return;
+  const el = e.target, id = el.id; if(!["q", "tq", "evq"].includes(id)) return;
   clearTimeout(typing);
   typing = setTimeout(() => {
-    const pos = e.target.selectionStart;
-    if(id === "q"){ ST.q = e.target.value; ST.lim = 60; } else if(id === "tq") ST.tq = e.target.value; else ST.evq = e.target.value;
-    render();
-    const el = M.querySelector("#" + id); if(el){ el.focus(); try { el.setSelectionRange(pos, pos); } catch(_){} }
+    if(id === "q"){ ST.q = el.value; ST.lim = 60; } else if(id === "tq") ST.tq = el.value; else ST.evq = el.value;
+    const L = document.getElementById("L");
+    if(L) L.innerHTML = id === "q" ? swList() : id === "tq" ? tmList() : evList(P[ST.ev]);
+    const x = document.getElementById(id + "x"); if(x) x.hidden = !el.value;
   }, 160);
 });
 

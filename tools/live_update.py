@@ -34,12 +34,16 @@ def digits(s):
 
 
 def fetch(url, etag=None, timeout=30):
+    """(状態, 中身, ETag, Last-Modified)。通信が切れた・時間切れのときは状態 0 を返す（例外を外に出さない）。
+    1つのPDFが取れないだけで、その回のほかの取り込みまで止めないため。"""
     req = urllib.request.Request(url, headers=dict(UA, **({"If-None-Match": etag} if etag else {})))
     try:
         with urllib.request.urlopen(req, timeout=timeout) as r:
             return r.status, r.read(), r.headers.get("ETag"), r.headers.get("Last-Modified")
     except urllib.error.HTTPError as e:
         return e.code, b"", None, None
+    except Exception as e:  # URLError・timeout・接続リセット・途中で切れた読み込みなど
+        return 0, repr(e).encode()[:200], None, None
 
 
 def discover(state, log):
@@ -128,10 +132,20 @@ def main():
         return h * 60 + m
 
     # 結果が出るのはそのレースが終わってから＝同じ日の次の競技No.の開始時刻ごろ。その2分前から見に行く。
+    # ただし次が休憩をはさむ決勝のとき（予選の最後のレース）は、二次要項の「予選終了予定」までとする。
+    # 日の最後のレースは「決勝終了予定」。この2つは開始から5分より前にはしない。
+    sched = base["meet"]["daySchedule"]
     end_of = {}
     for p in base["program"]:
         nxt = progs.get(p["no"] + 1)
-        end_of[p["no"]] = mins(nxt["start"]) if nxt and nxt["day"] == p["day"] else mins(p["start"]) + 10
+        sch = sched[p["day"] - 1]
+        if not nxt or nxt["day"] != p["day"]:
+            end = max(mins(sch[4]), mins(p["start"]) + 5)
+        elif p["round"] == "予選" and nxt["round"] != "予選":
+            end = max(mins(sch[2]), mins(p["start"]) + 5)
+        else:
+            end = mins(nxt["start"])
+        end_of[p["no"]] = end
 
     def ended(p):
         if p["day"] != today:
@@ -181,6 +195,9 @@ def main():
             if st == 304:
                 rec["checked"] = now.isoformat()
                 continue
+            if st == 0:
+                problems.append("%s 通信エラー（前の内容を残す）: %s" % (label, blob.decode(errors="replace")))
+                continue
             if st != 200:
                 continue
             try:
@@ -223,15 +240,21 @@ def main():
             if heats and max(heats) != p["heats"]:
                 warns.append("No.%d 結果の組は最大%d、公式は%d組" % (p["no"], max(heats), p["heats"]))
     live["warnings"] = warns
-    live["problems"] = sorted(set(problems))[:200]
+    # 通信エラー・見出し違い・読めないPDFを先に、名前の食い違いは後ろに（数が多くなりがちで前者が埋もれるため）
+    serious = lambda x: any(k in x for k in ("通信エラー", "見出し", "読めない"))
+    uniq = sorted(set(problems))
+    live["problems"] = ([x for x in uniq if serious(x)] + [x for x in uniq if not serious(x)])[:200]
     live["updated"] = now.isoformat(timespec="seconds")
 
     body = json.dumps(live, ensure_ascii=False, separators=(",", ":"))
     live_path.write_text(body, encoding="utf-8")
     for l in log:
         print("  " + l)
-    for w in warns + live["problems"][:30]:
+    for w in warns + [x for x in live["problems"] if serious(x)]:
         print("  ! " + w)
+    nm = sum(1 for x in set(problems) if not serious(x))
+    if nm:
+        print("  ! 選手番号一覧と名前・所属が合わない行 %d件（live.json の problems）" % nm)
     print("取り込み %d件 / 確認 %d件 / 取り込み済みの種目 %d" % (changed, len(targets), len(live["programs"])))
     if changed and not args.no_build and not args.out:
         import build

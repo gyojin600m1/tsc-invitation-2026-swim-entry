@@ -9,3 +9,4 @@ watch/launchd.*.log
 # 手元用の調査メモと名簿CSV
 調査メモ.md
 data/選手番号一覧_*.csv
+watch/.push_failed
