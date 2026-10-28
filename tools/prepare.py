@@ -158,8 +158,26 @@ def parse_invited(swimmers):
     return out
 
 
+def kagoshima(swimmers, teams):
+    """tools/kagoshima.json の鹿児島勢を選手番号に結びつける。名簿に無い・2人当たる名前は止める。"""
+    kg = json.loads((ROOT / "tools" / "kagoshima.json").read_text(encoding="utf-8"))
+    tname = {t["id"]: t["name"] for t in teams}
+    home_teams = [t["id"] for t in teams if t["name"] in kg["teams"]]
+    assert len(home_teams) == len(kg["teams"]), "鹿児島の団体名が選手番号一覧に無い"
+    out = []
+    for r in kg["swimmers"]:
+        hit = [s for s in swimmers if key(s["name"]) == key(r["name"]) and tname[s["tid"]] == r["team"]]
+        assert len(hit) == 1, (r["name"], len(hit))
+        out.append({"no": hit[0]["no"], "gender": r["gender"], "note": r["note"], "origin": bool(r.get("origin"))})
+    in_teams = {s["no"] for s in swimmers if s["tid"] in home_teams}
+    listed = {r["no"] for r in out if not r["origin"]}
+    assert in_teams == listed, "鹿児島の団体の選手と kagoshima.json の選手が合わない: %s" % sorted(in_teams ^ listed)
+    return home_teams, out
+
+
 def main():
     swimmers, teams, blank = parse_numbers()
+    home_teams, home = kagoshima(swimmers, teams)
     program = parse_timetable()
     invited = parse_invited(swimmers)
     inv_entries = sum(len(d) for r in invited for d in r["days"])
@@ -185,6 +203,8 @@ def main():
     ng |= not ok
     print("   予選+T決勝 %d組 → 申込は %d〜%d の範囲。公式 %d  %s" % (pre_heats, lo, hi, OFFICIAL["entries"], "✓" if ok else "✗"))
     print("   空欄の選手番号: %s" % blank)
+    print("   鹿児島勢: %d団体 %d名（うち鹿児島出身の大学生 %d名）" % (
+        len(home_teams), len(home), sum(r["origin"] for r in home)))
     print("────────────────────────────────────")
     if ng:
         sys.exit("✗ 公式の集計値と合わないので書き出しません")
@@ -211,6 +231,8 @@ def main():
         "teams": [{k: v for k, v in t.items() if k != "nos"} for t in teams],
         "program": program,
         "invited": invited,
+        "homeTeams": home_teams,
+        "home": home,
     }
     out = ROOT / "data" / "base.json"
     out.write_text(json.dumps(base, ensure_ascii=False, separators=(",", ":")), encoding="utf-8")

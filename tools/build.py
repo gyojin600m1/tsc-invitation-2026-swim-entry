@@ -83,6 +83,20 @@ def main(argv=None):
     for sw in conflict:
         gender.pop(sw, None)
 
+    # 鹿児島勢 = tools/kagoshima.json（base.home）＋ 結果・スタートリストの加盟が「鹿児島」の選手
+    home = {r["no"]: dict(r) for r in base.get("home", [])}
+    for rec in live.get("programs", {}).values():
+        for kind in ("result", "start"):
+            for x in rec.get(kind, {}).get("rows", []):
+                if x["sw"] in nos and x.get("pref") == "鹿児島" and x["sw"] not in home:
+                    home[x["sw"]] = {"no": x["sw"], "note": "", "origin": False, "live": True}
+    for no, r in home.items():
+        if r.get("gender") and gender.get(no, r["gender"]) != r["gender"]:
+            print("   ! 鹿児島 No.%d の性別が県のデータ（%s）と結果（%s）で違う。結果を使う" % (no, r["gender"], gender[no]))
+        elif r.get("gender") and no not in conflict:
+            gender.setdefault(no, r["gender"])
+    print("   鹿児島勢 %d名（結果で加わった %d名）" % (len(home), sum(1 for r in home.values() if r.get("live"))))
+
     # 公式の申込数 8,881 との照合（予選・タイム決勝の結果がそろったときに一致するはず）
     entry_progs = [p for p in base["program"] if p["round"] in ("予選", "タイム決勝")]
     have = [p for p in entry_progs if "r" in L.get(str(p["no"]), {})]
@@ -103,6 +117,8 @@ def main(argv=None):
         "meet": base["meet"], "swimmers": base["swimmers"], "teams": base["teams"],
         "program": base["program"], "invited": base["invited"], "yomi": yomi,
         "live": L, "gender": gender, "conflict": sorted(conflict), "kana": kana,
+        "home": [{k: v for k, v in r.items() if k != "gender"} for r in home.values()],
+        "homeTeams": base.get("homeTeams", []),
         "updated": live.get("updated", ""),
         "check": {"entryEvents": len(entry_progs), "haveEvents": len(have), "entries": entries,
                   "heatOk": heat_ok, "unmatched": unmatched, "warnings": live.get("warnings", [])},
