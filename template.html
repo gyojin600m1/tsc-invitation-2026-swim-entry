@@ -1,0 +1,663 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; img-src data:; connect-src 'self' https://abacus.jasoncameron.dev; base-uri 'none'; form-action 'none'">
+<meta name="theme-color" content="#0a1628">
+<title>東京SC招待2026 エントリー確認</title>
+<style>
+:root{
+  /* ---- 男女色（毎回固定・変更禁止） ---- */
+  --male:#1565c0; --female:#b71c6e;
+  --maleText:#6fb7ff; --femaleText:#ff92c2;
+  --unk:#56637d;
+  --bg:#0a0f1c; --bg2:#0d1220;
+  --card:#121b2e; --card2:#0f1729;
+  --border:#263149; --border2:#1b2740;
+  --text:#e8eefc; --muted:#8fa3c8; --dim:#6b7c9e;
+  --accent:#4da3ff; --accentDim:#2b6db8;
+  --gold:#ffcc66; --green:#7ee2a8;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;padding:0;background:var(--bg);color:var(--text)}
+body{font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans","Hiragino Kaku Gothic ProN","Yu Gothic",Meiryo,sans-serif;
+  font-size:14px;line-height:1.5;overflow-x:hidden;padding-bottom:env(safe-area-inset-bottom)}
+button,input{font-family:inherit;font-size:inherit;color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+
+/* ---------- ヘッダー ---------- */
+.hd{position:sticky;top:0;z-index:50;background:linear-gradient(135deg,#0a1628,#0d2547);
+  border-bottom:1px solid var(--border);padding:8px 12px 0}
+.hd-top{display:flex;align-items:center;gap:9px;min-width:0}
+.hd-ico{flex:0 0 auto;width:34px;height:34px;border-radius:9px;background:linear-gradient(135deg,#3d8ee0,#6fb7ff);
+  display:flex;align-items:center;justify-content:center;font-size:17px}
+.hd-txt{min-width:0;flex:1}
+.hd-t{font-size:15px;font-weight:700;line-height:1.25;overflow-wrap:anywhere}
+.hd-s{font-size:11px;color:var(--muted);line-height:1.3;margin-top:1px;overflow-wrap:anywhere}
+.live{display:inline-flex;align-items:center;gap:4px;margin-left:6px;padding:1px 8px;border-radius:999px;
+  background:#c62828;color:#fff;font-size:10.5px;font-weight:800;vertical-align:middle;white-space:nowrap}
+.live i{width:6px;height:6px;border-radius:50%;background:#fff;animation:lv 1.6s ease-in-out infinite}
+@keyframes lv{0%,100%{opacity:1}50%{opacity:.25}}
+@media (prefers-reduced-motion:reduce){.live i{animation:none}}
+.tabs{display:flex;gap:2px;margin-top:7px}
+.tab{flex:1 1 0;min-width:0;min-height:52px;padding:5px 1px 6px;display:flex;flex-direction:column;align-items:center;
+  justify-content:center;gap:1px;border-radius:9px 9px 0 0;background:transparent;border:0;color:var(--muted);
+  font-size:10.5px;font-weight:600;line-height:1.15;white-space:nowrap}
+.tab .em{font-size:15px;line-height:1}
+.tab.on{background:var(--bg);color:var(--accent)}
+
+/* ---------- 共通 ---------- */
+.wrap{padding:12px 12px 40px;max-width:720px;margin:0 auto}
+.seg{display:flex;gap:6px;margin-bottom:9px}
+.seg button{flex:1 1 0;min-width:0;min-height:48px;border-radius:11px;border:1px solid var(--border);
+  background:var(--card2);color:var(--muted);font-weight:700;font-size:13px;padding:0 2px;line-height:1.2}
+.seg button.on{background:var(--accentDim);border-color:var(--accent);color:#fff}
+.seg button.on.m{background:var(--male);border-color:var(--maleText)}
+.seg button.on.f{background:var(--female);border-color:var(--femaleText)}
+.seg button small{display:block;font-size:10px;font-weight:600;opacity:.85}
+.field{display:flex;gap:6px;margin-bottom:9px}
+.field input{flex:1;min-width:0;min-height:48px;padding:0 14px;border-radius:11px;border:1px solid var(--border);
+  background:var(--card2);font-size:16px}
+.field input::placeholder{color:var(--dim);font-size:13px}
+.field button{flex:0 0 auto;min-height:48px;min-width:48px;padding:0 14px;border-radius:11px;border:1px solid var(--border);
+  background:var(--card);color:var(--muted);font-weight:700}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:5px;margin-bottom:10px}
+.stat{min-width:0;background:var(--card2);border:1px solid var(--border2);border-radius:10px;padding:6px 2px;text-align:center}
+.stat b{display:block;font-size:16px;color:var(--accent);line-height:1.2;font-variant-numeric:tabular-nums}
+.stat span{display:block;font-size:9.5px;color:var(--dim);line-height:1.25;overflow-wrap:anywhere}
+.note{background:var(--card2);border:1px solid var(--border2);border-left:3px solid var(--accentDim);border-radius:9px;
+  padding:9px 11px;font-size:12px;color:var(--muted);line-height:1.65;margin-bottom:10px}
+.note b{color:var(--text)}
+.count{text-align:center;color:var(--muted);font-size:12.5px;margin:6px 0 10px}
+.count b{color:var(--accent);font-size:15px}
+.empty{text-align:center;color:var(--dim);padding:40px 16px;font-size:13px;line-height:1.9}
+.empty .e{font-size:34px;display:block;margin-bottom:10px}
+.gsec{display:flex;align-items:center;gap:7px;margin:16px 0 8px;font-weight:700;font-size:14px;padding-bottom:5px}
+.gsec.m{color:var(--maleText);border-bottom:2px solid var(--male)}
+.gsec.f{color:var(--femaleText);border-bottom:2px solid var(--female)}
+.gsec.u{color:var(--muted);border-bottom:2px solid var(--unk)}
+.gsec.a{color:var(--gold);border-bottom:2px solid rgba(255,204,102,.5)}
+.gsec .n{margin-left:auto;font-size:12px;color:var(--dim);font-weight:600}
+.more{display:block;width:100%;min-height:48px;margin:6px 0 12px;border-radius:11px;border:1px dashed var(--border);
+  background:transparent;color:var(--accent);font-weight:700}
+.back{display:inline-flex;align-items:center;gap:6px;min-height:48px;padding:0 14px;margin-bottom:10px;border-radius:11px;
+  border:1px solid var(--border);background:var(--card2);color:var(--muted);font-weight:700}
+.pill{flex:0 0 auto;display:inline-block;font-size:10.5px;border-radius:5px;padding:2px 7px;background:var(--card2);
+  color:var(--muted);border:1px solid var(--border2);white-space:nowrap;line-height:1.5}
+.pill.m{background:var(--male);color:#fff;border-color:transparent;font-weight:700}
+.pill.f{background:var(--female);color:#fff;border-color:transparent;font-weight:700}
+.pill.hl{background:var(--gold);color:#241a00;border-color:transparent;font-weight:700}
+.pill.ent{color:var(--accent);border-color:rgba(77,163,255,.4)}
+.pill.t{color:var(--gold);border-color:rgba(255,204,102,.35);font-weight:700;font-variant-numeric:tabular-nums}
+.pill.rk{background:rgba(255,204,102,.16);color:var(--gold);border-color:transparent;font-weight:800}
+.pill.rk.m1{background:var(--gold);color:#241a00}
+.pill.adv{background:rgba(64,200,120,.16);color:var(--green);border-color:transparent;font-weight:800}
+.pill.dns{background:rgba(140,155,185,.16);color:var(--muted);border-color:transparent;font-weight:700}
+.pill.ov{color:var(--muted);border-color:var(--border);font-weight:700}
+
+/* ---------- 選手カード（左5pxライン） ---------- */
+.sw{position:relative;background:var(--card);border:1px solid var(--border2);border-radius:11px;margin-bottom:7px;overflow:hidden}
+.sw::before{content:"";position:absolute;left:0;top:0;bottom:0;width:5px;background:var(--unk)}
+.sw.m::before{background:var(--male)}
+.sw.f::before{background:var(--female)}
+.sw-hd{display:block;width:100%;min-height:56px;text-align:left;background:none;border:0;padding:9px 11px 9px 15px}
+.sw-r1{display:flex;align-items:baseline;gap:7px;min-width:0}
+.sw-nm{font-size:15px;font-weight:700;overflow-wrap:anywhere;min-width:0}
+.sw-bd{margin-left:auto;flex:0 0 auto;font-size:11.5px;font-weight:700;color:var(--accent);background:rgba(77,163,255,.13);
+  border-radius:13px;padding:2px 9px;white-space:nowrap;font-variant-numeric:tabular-nums}
+.sw-r2{display:flex;align-items:center;gap:5px;margin-top:4px;min-width:0;flex-wrap:wrap}
+.sw-tm{font-size:12px;color:var(--muted);overflow-wrap:anywhere;min-width:0;margin-right:2px}
+.sw-pl{font-size:11px;color:var(--dim);margin-top:4px;line-height:1.5;overflow-wrap:anywhere}
+.det{padding:0 11px 11px 15px;border-top:1px solid var(--border2)}
+.dnote{font-size:12px;color:var(--muted);line-height:1.6;padding:9px 0 2px}
+.race{display:block;width:100%;min-height:48px;text-align:left;margin-top:8px;padding:8px 10px;border-radius:10px;
+  border:1px solid var(--border2);background:var(--card2)}
+.rc1{font-size:12.5px;line-height:1.45;overflow-wrap:anywhere}
+.rc1 b{color:var(--accent);font-variant-numeric:tabular-nums}
+.rc1 .dim{color:var(--dim)}
+.rc2{display:flex;flex-wrap:wrap;gap:5px;margin-top:5px}
+.plan{margin-top:10px;font-size:12px;color:var(--muted);line-height:1.65}
+.plan b{color:var(--gold)}
+.acts{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+.act{min-height:48px;padding:0 14px;border-radius:11px;border:1px solid var(--border);background:var(--card2);
+  color:var(--text);font-weight:600;font-size:13px;max-width:100%;overflow-wrap:anywhere;text-align:left}
+
+/* ---------- 団体 ---------- */
+.tm{display:flex;align-items:center;gap:8px;width:100%;min-height:52px;text-align:left;padding:8px 12px;margin-bottom:6px;
+  border-radius:11px;border:1px solid var(--border2);background:var(--card)}
+.tm .nm{font-weight:700;font-size:14px;overflow-wrap:anywhere;min-width:0;flex:1}
+.tm .nm small{display:block;font-size:10.5px;color:var(--dim);font-weight:500}
+.tm .ct{flex:0 0 auto;font-size:12px;color:var(--muted);text-align:right;line-height:1.35;font-variant-numeric:tabular-nums}
+.tm .ct .m{color:var(--maleText)} .tm .ct .f{color:var(--femaleText)}
+.thd{background:var(--card);border:1px solid var(--border2);border-radius:11px;padding:11px 13px;margin-bottom:8px}
+.thd .nm{font-size:17px;font-weight:800;overflow-wrap:anywhere}
+.thd .sub{font-size:12px;color:var(--muted);margin-top:3px}
+
+/* ---------- 日程・種目 ---------- */
+.pg{position:relative;display:block;width:100%;min-height:56px;text-align:left;margin-bottom:6px;padding:8px 11px 8px 15px;
+  border-radius:11px;border:1px solid var(--border2);background:var(--card);overflow:hidden}
+.pg::before{content:"";position:absolute;left:0;top:0;bottom:0;width:5px;background:var(--male)}
+.pg.f::before{background:var(--female)}
+.pg1{display:flex;align-items:baseline;gap:8px;min-width:0}
+.pg1 .no{font-weight:800;color:var(--accent);font-variant-numeric:tabular-nums;flex:0 0 auto}
+.pg1 .tm2{color:var(--gold);font-weight:700;font-variant-numeric:tabular-nums;flex:0 0 auto}
+.pg1 .ev{font-weight:700;overflow-wrap:anywhere;min-width:0}
+.pg2{display:flex;flex-wrap:wrap;gap:5px;margin-top:5px}
+.pg.next{border-color:var(--gold);box-shadow:0 0 0 1px rgba(255,204,102,.4)}
+.sep{font-size:11.5px;color:var(--dim);text-align:center;margin:12px 0 8px;letter-spacing:.5px}
+.ehd{position:relative;background:var(--card);border:1px solid var(--border2);border-radius:11px;padding:11px 13px 11px 17px;
+  margin-bottom:8px;overflow:hidden}
+.ehd::before{content:"";position:absolute;left:0;top:0;bottom:0;width:5px;background:var(--male)}
+.ehd.f::before{background:var(--female)}
+.ehd .t{font-size:17px;font-weight:800;overflow-wrap:anywhere}
+.ehd .s{font-size:12px;color:var(--muted);margin-top:3px;line-height:1.6}
+.ehd a{color:var(--accent)}
+.heat{font-size:12.5px;font-weight:700;color:var(--accent);margin:12px 0 6px}
+.rw{position:relative;display:flex;align-items:center;gap:9px;width:100%;min-height:52px;text-align:left;padding:7px 10px 7px 14px;
+  margin-bottom:5px;border-radius:10px;border:1px solid var(--border2);background:var(--card);overflow:hidden}
+.rw::before{content:"";position:absolute;left:0;top:0;bottom:0;width:5px;background:var(--male)}
+.rw.f::before{background:var(--female)}
+.rw .ln{flex:0 0 auto;min-width:34px;text-align:center;font-weight:800;font-size:15px;color:var(--gold);font-variant-numeric:tabular-nums}
+.rw .ln small{display:block;font-size:9.5px;color:var(--dim);font-weight:600}
+.rw .who{flex:1;min-width:0}
+.rw .who .nm{display:block;font-weight:700;font-size:14px;overflow-wrap:anywhere}
+.rw .who .tmn{display:block;font-size:11.5px;color:var(--muted);overflow-wrap:anywhere}
+.rw .who .ex{display:flex;flex-wrap:wrap;gap:4px;margin-top:3px}
+.rw .tt{flex:0 0 auto;text-align:right;font-variant-numeric:tabular-nums;font-weight:800;color:var(--text);font-size:14px}
+.rw .tt small{display:block;font-size:10px;color:var(--dim);font-weight:600}
+.rw.nohit{opacity:.85}
+.links{display:flex;flex-wrap:wrap;gap:6px;margin:8px 0}
+.links a{display:inline-flex;align-items:center;min-height:44px;padding:0 13px;border-radius:10px;border:1px solid var(--border);
+  background:var(--card2);color:var(--accent);font-weight:700;font-size:12.5px;text-decoration:none}
+
+/* ---------- 情報 ---------- */
+.ib{background:var(--card);border:1px solid var(--border2);border-radius:11px;padding:11px 13px;margin-bottom:9px}
+.ib h3{margin:0 0 6px;font-size:14px;color:var(--accent)}
+.ib p,.ib li{font-size:12.5px;color:var(--muted);line-height:1.7;margin:0}
+.ib ul{margin:0;padding-left:1.2em}
+.ib a{color:var(--accent);overflow-wrap:anywhere}
+.kv{display:flex;gap:10px;font-size:12.5px;line-height:1.6;padding:3px 0;border-bottom:1px dashed var(--border2)}
+.kv:last-child{border-bottom:0}
+.kv span{flex:0 0 88px;color:var(--dim)}
+.kv b{font-weight:600;color:var(--text);min-width:0;overflow-wrap:anywhere}
+.ok{color:var(--green)} .ng{color:#ff8a8a}
+
+.ft{text-align:center;color:var(--dim);font-size:11px;line-height:1.8;padding:24px 8px 8px}
+.ft .ct{margin-top:6px;color:var(--muted)}
+.upd{position:fixed;left:12px;right:12px;bottom:calc(12px + env(safe-area-inset-bottom));z-index:60;min-height:52px;
+  border-radius:13px;border:0;background:var(--gold);color:#241a00;font-weight:800;font-size:14px;box-shadow:0 6px 24px rgba(0,0,0,.45)}
+</style>
+</head>
+<body>
+<header class="hd">
+  <div class="hd-top">
+    <div class="hd-ico" aria-hidden="true">🏊</div>
+    <div class="hd-txt">
+      <div class="hd-t">東京SC招待2026 エントリー確認</div>
+      <div class="hd-s" id="sub">第57回 東京SC優秀選手招待 · 10/30〜11/3 · 東京アクアティクスセンター</div>
+    </div>
+  </div>
+  <nav class="tabs" id="tabs">
+    <button class="tab" data-tab="sw"><span class="em">👤</span>選手</button>
+    <button class="tab" data-tab="tm"><span class="em">🏫</span>チーム</button>
+    <button class="tab" data-tab="pg"><span class="em">📅</span>日程</button>
+    <button class="tab" data-tab="iv"><span class="em">⭐</span>招待</button>
+    <button class="tab" data-tab="in"><span class="em">ℹ️</span>情報</button>
+  </nav>
+</header>
+<main class="wrap" id="M"></main>
+<button class="upd" id="upd" hidden>新しい結果があります（タップで更新）</button>
+<script>
+"use strict";
+const D = /*__DATA__*/{}/*__DATA_END__*/;
+const M = document.getElementById("M");
+const esc = s => String(s == null ? "" : s).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const DAYSHORT = ["30金","31土","1日","2月","3火"];
+const DAYLBL = D.meet.days;
+const COUNTER_NS = "gyojin600m1-tsc-invitation-2026-swim";
+
+/* ---------- 正規化・ふりがな照合 ---------- */
+function norm(s){
+  s = String(s == null ? "" : s).normalize("NFKC").toLowerCase().replace(/[\s・／\/]/g, "");
+  let o = "";
+  for(const ch of s){ const c = ch.codePointAt(0); o += (c >= 0x30a1 && c <= 0x30f6) ? String.fromCodePoint(c - 0x60) : ch; }
+  return o;
+}
+const YOMI = D.yomi || {};
+const isHira = v => /^[ぁ-ゖー]{2,}$/.test(v);
+// YOMI[漢字] = [音訓, 名乗りだけの読み]。withName=false なら音訓だけで照合する
+function readingsOf(text, withName){
+  const out = []; let prev = "";
+  const of = ch => { const y = YOMI[ch]; return y ? (withName ? y[0].concat(y[1]) : y[0]) : []; };
+  for(const ch of text){
+    if(ch === "々" && prev) out.push(of(prev));
+    else if(ch >= "ぁ" && ch <= "ゖ") out.push([ch]);
+    else out.push(of(ch));
+    prev = ch;
+  }
+  return out;
+}
+function kanaHit(text, query, withName = true){
+  const name = norm(text);
+  if(!name || !query) return false;
+  const rd = readingsOf(name, withName), seen = new Map();
+  const walk = (i, pos) => {
+    if(pos >= query.length) return 2;
+    if(i >= name.length) return 0;
+    const key = i + ":" + pos;
+    if(seen.has(key)) return seen.get(key);
+    seen.set(key, 0);
+    let best = 0; const rest = query.slice(pos);
+    for(const r of rd[i]){
+      if(r.startsWith(rest)) best = Math.max(best, 1);
+      if(rest.startsWith(r)){
+        const next = pos + r.length;
+        best = Math.max(best, walk(i + 1, next));
+        if("のがつっ".includes(query[next] || "") && next + 1 < query.length) best = Math.max(best, walk(i + 1, next + 1));
+      }
+      if(best === 2) break;
+    }
+    seen.set(key, best); return best;
+  };
+  return walk(0, 0) > 0;     // 頭から当たったものだけ（途中一致は誤ヒットが多い）
+}
+function kanaMatch(text, query){
+  if(kanaHit(text, query)) return true;
+  const parts = String(text || "").split(/[\s　]+/).filter(Boolean);
+  if(parts.length > 1) for(const t of parts) if(kanaHit(t, query)) return true;
+  return false;
+}
+
+/* ---------- データの組み立て ---------- */
+const P = {}; D.program.forEach(p => P[p.no] = p);
+const TEAMS = D.teams.map(t => Object.assign({}, t, {members: []}));
+const SW = new Map();
+D.swimmers.forEach(([no, name, tid]) => {
+  const s = {no, name, tid, team: TEAMS[tid].name, g: D.gender[no] || "", grade: "", races: new Map(), inv: null,
+             kana: D.kana[no] || ""};
+  s.q = norm(s.name) + "|" + norm(s.team) + "|" + norm(s.kana);
+  SW.set(no, s); TEAMS[tid].members.push(s);
+});
+D.invited.forEach(r => { const s = SW.get(r.no); if(s) s.inv = r; });
+const ADV = {};             // 予選No. → Map(選手番号 → [{p, lane}])  決勝・区分決勝のスタートリストから
+function race(s, p){ let r = s.races.get(p.no); if(!r){ r = {p}; s.races.set(p.no, r); } return r; }
+for(const [k, v] of Object.entries(D.live)){
+  const p = P[+k];
+  (v.s || []).forEach(row => {
+    const [sw, heat, lane, entry, grade] = row; if(sw == null) return;
+    const s = SW.get(sw); race(s, p).s = {heat, lane, entry};
+    if(grade && !s.grade) s.grade = grade;
+    if(p.from){ const m = ADV[p.from] || (ADV[p.from] = new Map()); const a = m.get(sw) || []; a.push({p, lane}); m.set(sw, a); }
+  });
+  (v.r || []).forEach(row => {
+    const [sw, rank, heat, lane, time, note, grade] = row; if(sw == null) return;
+    const s = SW.get(sw); race(s, p).r = {rank, heat, lane, time, note};
+    if(grade) s.grade = grade;
+  });
+}
+const LIVE_ANY = Object.keys(D.live).length > 0;
+const KNOWN_G = Object.keys(D.gender).length;
+
+/* ---------- 時刻（日本時間） ---------- */
+function jstNow(){ const d = new Date(Date.now() + 9 * 3600e3); return {date: d.toISOString().slice(0, 10), min: d.getUTCHours() * 60 + d.getUTCMinutes()}; }
+const toMin = t => { const [h, m] = t.split(":").map(Number); return h * 60 + m; };
+function todayIdx(){ const i = D.meet.dates.indexOf(jstNow().date); return i; }
+
+/* ---------- 表示の部品 ---------- */
+const gcls = g => g === "男子" ? "m" : g === "女子" ? "f" : "u";
+const gpill = g => g === "男子" ? '<span class="pill m">🔵男子</span>' : g === "女子" ? '<span class="pill f">🔴女子</span>' : "";
+const evName = p => p.distance + " " + p.stroke;
+const roundLbl = p => p.round === "区分決勝" ? p.cat + "決勝" : p.round;
+const fmtGen = s => s ? s.replace(/^\d{4}\//, "").replace(/:\d{2}$/, "") : "";
+
+const ST = {tab: "sw", q: "", g: "all", lim: 60, open: new Set(), team: null, tq: "", day: null, ev: null, evq: "", evSort: "rank", from: null};
+try { const t = localStorage.getItem("tsc26:tab"); if(t && ["sw","tm","pg","iv","in"].includes(t)) ST.tab = t; } catch(_){}
+ST.day = Math.max(0, todayIdx());
+
+function swCard(s, extra){
+  const open = ST.open.has(s.no);
+  return `<div class="sw ${gcls(s.g)}"><button class="sw-hd" data-sw="${s.no}" aria-expanded="${open}">
+    <div class="sw-r1"><span class="sw-nm">${esc(s.name)}</span><span class="sw-bd">No.${s.no}</span></div>
+    <div class="sw-r2"><span class="sw-tm">${esc(s.team)}</span>${gpill(s.g)}${s.grade ? `<span class="pill">${esc(s.grade)}</span>` : ""}${s.inv ? '<span class="pill hl">⭐招待</span>' : ""}${s.races.size ? `<span class="pill ent">${s.races.size}レース</span>` : ""}</div>
+    ${extra || ""}</button>${open ? detail(s) : ""}</div>`;
+}
+function raceLine(s, r){
+  const p = r.p, st = [];
+  if(r.s) st.push(r.s.lane < 0 ? '<span class="pill ov">補欠</span>'
+                               : `<span class="pill ent">${p.heats > 1 ? r.s.heat + "組 " : ""}${r.s.lane}レーン</span>`);
+  if(r.r){
+    if(!r.s) st.push(`<span class="pill ent">${r.r.heat}組 ${r.r.lane}レーン</span>`);
+    if(r.r.time) st.push(`<span class="pill t">${esc(r.r.time)}</span>`);
+    if(r.r.rank) st.push(`<span class="pill rk${r.r.rank === 1 ? " m1" : ""}">${r.r.rank}位</span>`);
+    if(r.r.note) st.push(`<span class="pill dns">${esc(r.r.note)}</span>`);
+  } else if(r.s){
+    st.push('<span class="pill">結果待ち</span>');
+  }
+  ((ADV[p.no] && ADV[p.no].get(s.no)) || []).forEach(a =>
+    st.push(`<span class="pill adv">→ No.${a.p.no} ${esc(roundLbl(a.p))}${a.lane < 0 ? " 補欠" : " " + a.lane + "レーン"}</span>`));
+  return `<button class="race" data-ev="${p.no}"><div class="rc1"><b>No.${p.no}</b> <span class="dim">${DAYSHORT[p.day - 1]} ${p.start}</span> ${esc(evName(p))} ${esc(roundLbl(p))}</div><div class="rc2">${st.join("")}</div></button>`;
+}
+function planText(inv){
+  return inv.days.map((evs, i) => evs.length ? `<b>${DAYLBL[i]}</b> ${evs.map(esc).join("・")}` : "").filter(Boolean).join("<br>");
+}
+function detail(s){
+  const rs = [...s.races.values()].sort((a, b) => a.p.no - b.p.no);
+  let h = '<div class="det">';
+  if(rs.length) h += rs.map(r => raceLine(s, r)).join("");
+  else h += `<div class="dnote">${LIVE_ANY ? "まだ結果・スタートリストに名前が出ていません。種目ごとの予選結果が出ると、ここに出場種目が並びます。"
+                                            : "出場種目は、種目ごとの予選結果が出ると表示されます（10/30 9:00〜）。"}</div>`;
+  if(s.inv) h += `<div class="plan">⭐ ${esc(s.inv.group)}・出場予定<br>${planText(s.inv)}</div>`;
+  h += `<div class="acts"><button class="act" data-team="${s.tid}">🏫 ${esc(s.team)} の名簿</button></div></div>`;
+  return h;
+}
+
+/* ---------- 選手 ---------- */
+function searchSw(q){
+  const nq = norm(q);
+  let list = [...SW.values()];
+  if(ST.g !== "all") list = list.filter(s => s.g === (ST.g === "m" ? "男子" : "女子"));
+  if(!nq) return list;
+  if(/^\d+$/.test(nq)){
+    const exact = list.filter(s => String(s.no) === nq);
+    return exact.concat(list.filter(s => String(s.no) !== nq && String(s.no).startsWith(nq)));
+  }
+  // 当たり方で並べる: 0 名前・公式ヨミ・チームの文字一致 / 1 姓から音訓 / 2 名から音訓 / 3 名乗りを使う / 4 チームの読み
+  const hira = isHira(nq);
+  const score = s => {
+    if(s.q.includes(nq)) return 0;
+    if(!hira) return -1;
+    if(kanaHit(s.name, nq, false)) return 1;
+    const parts = s.name.split(/[\s　]+/);
+    if(parts.length > 1 && parts.slice(1).some(t => kanaHit(t, nq, false))) return 2;
+    if(kanaMatch(s.name, nq)) return 3;
+    if(kanaMatch(s.team, nq)) return 4;
+    return -1;
+  };
+  return list.map(s => [score(s), s]).filter(x => x[0] >= 0).sort((a, b) => a[0] - b[0] || a[1].no - b[1].no).map(x => x[1]);
+}
+function viewSw(){
+  const list = searchSw(ST.q);
+  const gk = KNOWN_G;
+  let h = `<div class="field"><input id="q" type="search" inputmode="search" enterkeyhint="search" autocomplete="off"
+     placeholder="名前・ひらがな・チーム・選手番号" value="${esc(ST.q)}" aria-label="選手を検索">${ST.q ? '<button id="qx" aria-label="検索を消す">✕</button>' : ""}</div>
+   <div class="seg" role="group" aria-label="男女">
+     <button data-g="all" class="${ST.g === "all" ? "on" : ""}">すべて</button>
+     <button data-g="m" class="m ${ST.g === "m" ? "on" : ""}">🔵男子</button>
+     <button data-g="f" class="f ${ST.g === "f" ? "on" : ""}">🔴女子</button></div>`;
+  if(!ST.q && ST.g === "all"){
+    h += `<div class="stats"><div class="stat"><b>${D.meet.official.swimmers.toLocaleString()}</b><span>選手</span></div>
+      <div class="stat"><b>${D.meet.official.teams}</b><span>団体</span></div>
+      <div class="stat"><b>${D.meet.official.entries.toLocaleString()}</b><span>申込種目</span></div>
+      <div class="stat"><b>${D.check.haveEvents}/${D.check.entryEvents}</b><span>予選の結果</span></div></div>`;
+    h += `<div class="note">${gk ? `性別は結果に名前が出た選手から付きます（今 <b>${gk.toLocaleString()}</b>名）。` :
+      "公式の選手番号一覧には性別と種目が載っていません。<b>10/30 9:00 から</b>、種目ごとの予選結果が出るたびに出場種目・組・レーン・記録と性別を足していきます。"}
+      カードを押すと出場種目が開きます。</div>`;
+  }
+  if(ST.g !== "all" && !gk) h += '<div class="note">まだ性別の分かる選手がいません。予選の結果が出ると絞り込めます。</div>';
+  h += `<div class="count"><b>${list.length.toLocaleString()}</b> 名</div>`;
+  if(!list.length) return h + `<div class="empty"><span class="e">🔍</span>見つかりません。<br>漢字の一部・ひらがな・チーム名・選手番号でも探せます。</div>`;
+  h += list.slice(0, ST.lim).map(s => swCard(s)).join("");
+  if(list.length > ST.lim) h += `<button class="more" id="more">さらに表示（残り ${(list.length - ST.lim).toLocaleString()} 名）</button>`;
+  return h;
+}
+
+/* ---------- チーム ---------- */
+function viewTm(){
+  if(ST.team != null) return viewTeam(TEAMS[ST.team]);
+  const nq = norm(ST.tq), hira = isHira(nq);
+  const list = TEAMS.filter(t => !nq || norm(t.name).includes(nq) || (hira && kanaMatch(t.name, nq)));
+  let h = `<div class="field"><input id="tq" type="search" inputmode="search" autocomplete="off" placeholder="チーム名で絞り込む"
+      value="${esc(ST.tq)}" aria-label="チームを検索">${ST.tq ? '<button id="tqx" aria-label="検索を消す">✕</button>' : ""}</div>
+    <div class="count"><b>${list.length}</b> 団体 <span style="color:var(--dim)">（選手番号順）</span></div>`;
+  h += list.map(t => {
+    const m = t.members.filter(s => s.g === "男子").length, f = t.members.filter(s => s.g === "女子").length;
+    return `<button class="tm" data-team="${t.id}"><span class="nm">${esc(t.name)}${t.note ? `<small>${esc(t.note)}</small>` : `<small>No.${t.members[0].no}〜</small>`}</span>
+      <span class="ct">${t.members.length}名${m || f ? `<br><span class="m">男${m}</span> <span class="f">女${f}</span>` : ""}</span></button>`;
+  }).join("");
+  return h;
+}
+function viewTeam(t){
+  const by = g => t.members.filter(s => s.g === g);
+  const m = by("男子"), f = by("女子"), u = by("");
+  let h = `<button class="back" id="back">← チーム一覧</button>
+    <div class="thd"><div class="nm">${esc(t.name)}</div><div class="sub">${t.members.length}名 · 選手番号 ${t.members.map(s => s.no).join("・").length < 60 ? t.members.map(s => s.no).join("・") : t.members[0].no + "〜"}${t.note ? " · " + esc(t.note) : ""}</div></div>`;
+  if(!m.length && !f.length) h += '<div class="note">性別は予選の結果に名前が出た選手から分かります。今は選手番号順に並べています。</div>';
+  if(m.length) h += `<div class="gsec m">🔵 男子<span class="n">${m.length}名</span></div>` + m.map(s => swCard(s)).join("");
+  if(f.length) h += `<div class="gsec f">🔴 女子<span class="n">${f.length}名</span></div>` + f.map(s => swCard(s)).join("");
+  if(u.length) h += `<div class="gsec u">${m.length || f.length ? "性別がまだ分からない選手" : "選手"}<span class="n">${u.length}名</span></div>` + u.map(s => swCard(s)).join("");
+  return h;
+}
+
+/* ---------- 日程 ---------- */
+function status(p){
+  const v = D.live[p.no] || {};
+  if(v.r){ const n = v.r.length, d = v.r.filter(r => r[5]).length;
+           return `<span class="pill adv">結果 ${n}人</span>` + (d ? `<span class="pill dns">棄権等 ${d}</span>` : ""); }
+  if(v.s) return '<span class="pill ent">スタートリストあり</span>';
+  return '<span class="pill">未発表</span>';
+}
+function viewPg(){
+  if(ST.ev != null) return viewEv(P[ST.ev]);
+  const di = ST.day, ti = todayIdx(), now = jstNow().min, sch = D.meet.daySchedule[di];
+  const ps = D.program.filter(p => p.day === di + 1);
+  const nextNo = ti === di ? (ps.find(p => toMin(p.start) > now) || {}).no : null;
+  let h = `<div class="seg" role="group" aria-label="日">${DAYSHORT.map((d, i) =>
+      `<button data-day="${i}" class="${i === di ? "on" : ""}">${d}${i === ti ? "<small>今日</small>" : ""}</button>`).join("")}</div>
+    <div class="note"><b>${DAYLBL[di]}</b> 開門 ${sch[0]} · 予選 ${sch[1]}〜${sch[2]} · 決勝 ${sch[3]}〜${sch[4]}（予定）</div>`;
+  let sepDone = false;
+  ps.forEach(p => {
+    if(!sepDone && p.round !== "予選" && p.round !== "タイム決勝" ){ h += `<div class="sep">— 決勝（${sch[3]}〜） —</div>`; sepDone = true; }
+    if(p.round === "タイム決勝" && !sepDone){ h += `<div class="sep">— 決勝（${sch[3]}〜） —</div>`; sepDone = true; }
+    h += `<button class="pg ${gcls(p.gender)}${p.no === nextNo ? " next" : ""}" data-ev="${p.no}">
+      <div class="pg1"><span class="no">No.${p.no}</span><span class="tm2">${p.start}</span><span class="ev">${p.gender} ${esc(evName(p))}</span></div>
+      <div class="pg2"><span class="pill">${esc(roundLbl(p))}</span>${p.round === "予選" || p.round === "タイム決勝" ? `<span class="pill">${p.heats}組</span>` : ""}${p.no === nextNo ? '<span class="pill hl">次</span>' : ""}${status(p)}</div></button>`;
+  });
+  return h;
+}
+function rowWho(sw, name, team){
+  const s = sw != null ? SW.get(sw) : null;
+  return {s, name: s ? s.name : name, team: s ? s.team : team};
+}
+function viewEv(p){
+  const v = D.live[p.no] || {};
+  const gc = gcls(p.gender);
+  let h = `<button class="back" id="back">← ${DAYSHORT[p.day - 1]}の日程</button>
+    <div class="ehd ${gc}"><div class="t">No.${p.no} ${p.gender} ${esc(evName(p))}</div>
+    <div class="s">${esc(roundLbl(p))} · ${DAYLBL[p.day - 1]} ${p.start}${p.round === "予選" || p.round === "タイム決勝" ? ` · 公式 ${p.heats}組` : ""}${p.from ? ` · 予選 No.${p.from}` : ""}</div></div>`;
+  const links = [];
+  if(v.su) links.push(`<a href="${esc(v.su)}" target="_blank" rel="noopener">スタートリスト（公式PDF）</a>`);
+  if(v.ru) links.push(`<a href="${esc(v.ru)}" target="_blank" rel="noopener">結果（公式PDF）</a>`);
+  if(links.length) h += `<div class="links">${links.join("")}</div>`;
+  if(!v.r && !v.s){
+    h += `<div class="empty"><span class="e">⏳</span>まだ発表されていません。<br>${p.round === "予選" || p.round === "タイム決勝"
+      ? "予選は全員分のスタートリストが公開されないため、結果が出たときに出場者全員が載ります。"
+      : "決勝のスタートリストは予選のあとに出ます。"}</div>`;
+    if(p.round === "予選" || p.round === "タイム決勝"){
+      const inv = D.invited.filter(r => (r.days[p.day - 1] || []).some(e => e === p.distance + p.stroke));
+      if(inv.length) h += `<div class="gsec a">⭐ 出場予定の招待選手<span class="n">性別は未確定</span></div>` + inv.map(r => swCard(SW.get(r.no))).join("");
+    }
+    return h;
+  }
+  if(v.r){
+    const rows = v.r.map(r => Object.assign({sw: r[0], rank: r[1], heat: r[2], lane: r[3], time: r[4], note: r[5], grade: r[6]},
+                                           rowWho(r[0], r[8], r[9])));
+    const big = rows.length > 10;
+    let list = rows;
+    if(big){
+      h += `<div class="field"><input id="evq" type="search" inputmode="search" autocomplete="off" placeholder="この種目の中で名前・チームを探す"
+        value="${esc(ST.evq)}" aria-label="この種目の中を探す">${ST.evq ? '<button id="evqx" aria-label="検索を消す">✕</button>' : ""}</div>
+        <div class="seg"><button data-sort="rank" class="${ST.evSort === "rank" ? "on" : ""}">順位順</button>
+        <button data-sort="heat" class="${ST.evSort === "heat" ? "on" : ""}">組・レーン順</button></div>`;
+      const nq = norm(ST.evq), hira = isHira(nq);
+      if(nq) list = list.filter(x => norm(x.name + "|" + x.team + "|" + (x.s ? x.s.kana : "")).includes(nq) || (hira && kanaMatch(x.name, nq)));
+      if(ST.evSort === "heat") list = list.slice().sort((a, b) => a.heat - b.heat || a.lane - b.lane);
+    }
+    const adv = ADV[p.no];
+    h += `<div class="count">結果 <b>${rows.length}</b> 人${big && list.length !== rows.length ? `（表示 ${list.length}）` : ""}</div>`;
+    let lastHeat = null;
+    h += list.map(x => {
+      let pre = "";
+      if(big && ST.evSort === "heat" && x.heat !== lastHeat){ pre = `<div class="heat">第${x.heat}組</div>`; lastHeat = x.heat; }
+      const ex = [];
+      if(x.grade) ex.push(`<span class="pill">${esc(x.grade)}</span>`);
+      ex.push(`<span class="pill ent">${big ? x.heat + "組" : ""}${x.lane}レーン</span>`);
+      ((adv && adv.get(x.sw)) || []).forEach(a => ex.push(`<span class="pill adv">→ ${esc(roundLbl(a.p))}${a.lane < 0 ? " 補欠" : ""}</span>`));
+      const lead = x.rank ? `${x.rank}<small>位</small>` : `<small>${esc(x.note || "-")}</small>`;
+      return pre + `<button class="rw ${gc}${x.s ? "" : " nohit"}" ${x.s ? `data-go="${x.sw}"` : "disabled"}>
+        <span class="ln">${lead}</span><span class="who"><span class="nm">${esc(x.name)}</span><span class="tmn">${esc(x.team)}</span>
+        <span class="ex">${ex.join("")}</span></span><span class="tt">${esc(x.time || "")}${x.time && x.note ? `<small>${esc(x.note)}</small>` : ""}</span></button>`;
+    }).join("");
+  }
+  if(v.s){
+    const rows = v.s.map(r => Object.assign({sw: r[0], heat: r[1], lane: r[2], entry: r[3], grade: r[4]}, rowWho(r[0], r[5], r[6])));
+    h += `<div class="gsec ${gc}">スタートリスト${v.sg ? `<span class="n">${esc(fmtGen(v.sg))} 発表</span>` : ""}</div>`;
+    const heats = [...new Set(rows.map(r => r.heat))].sort((a, b) => a - b);
+    heats.forEach(hn => {
+      if(heats.length > 1) h += `<div class="heat">第${hn}組</div>`;
+      const inH = rows.filter(r => r.heat === hn);
+      inH.filter(r => r.lane >= 0).sort((a, b) => a.lane - b.lane).concat(inH.filter(r => r.lane < 0)).forEach(x => {
+        h += `<button class="rw ${gc}${x.s ? "" : " nohit"}" ${x.s ? `data-go="${x.sw}"` : "disabled"}>
+          <span class="ln">${x.lane < 0 ? "<small>補欠</small>" : x.lane}${x.lane < 0 ? "" : "<small>レーン</small>"}</span>
+          <span class="who"><span class="nm">${esc(x.name)}</span><span class="tmn">${esc(x.team)}${x.grade ? " · " + esc(x.grade) : ""}</span></span>
+          <span class="tt">${esc(x.entry || "")}<small>予選記録</small></span></button>`;
+      });
+    });
+  }
+  return h;
+}
+
+/* ---------- 招待 ---------- */
+function viewIv(){
+  let h = '<div class="note">二次要項の「招待選手」19名（78種目）。出場予定は10/22公開の資料によります。</div>';
+  ["アジア大会代表", "JO最優秀・優秀選手"].forEach(gn => {
+    const rs = D.invited.filter(r => r.group === gn);
+    h += `<div class="gsec a">⭐ ${gn === "アジア大会代表" ? "第20回アジア競技大会 日本代表" : "JO夏季 最優秀・優秀選手"}<span class="n">${rs.length}名</span></div>`;
+    h += rs.map(r => { const s = SW.get(r.no);
+      const line = r.days.map((evs, i) => evs.length ? DAYSHORT[i] + " " + evs.join("・") : "").filter(Boolean).join(" / ");
+      return swCard(s, `<div class="sw-pl">${esc(r.affiliation)}<br>${esc(line)}</div>`); }).join("");
+  });
+  return h;
+}
+
+/* ---------- 情報 ---------- */
+function viewIn(){
+  const c = D.check, off = D.meet.official;
+  const done = c.haveEvents === c.entryEvents;
+  let h = `<div class="ib"><h3>大会</h3>
+    <div class="kv"><span>大会名</span><b>${esc(D.meet.name)}</b></div>
+    <div class="kv"><span>競泳</span><b>2026年10月30日(金)〜11月3日(火・祝)　※10/29は公式練習</b></div>
+    <div class="kv"><span>会場</span><b>東京アクアティクスセンター（50m・10レーン）</b></div>
+    <div class="kv"><span>規模</span><b>${off.teams}団体・${off.swimmers.toLocaleString()}名（招待${off.invited}名）・${off.entries.toLocaleString()}種目</b></div>
+    <div class="kv"><span>配信</span><b>YouTube「かわずちゃんねる」</b></div></div>
+  <div class="ib"><h3>決勝への進み方</h3><ul>
+    <li>予選は全区分いっしょに泳ぐ（800・1500m自由形はタイム決勝）。</li>
+    <li>予選の上位10名が<b>決勝</b>。決勝に入らなかった人の中から、区分ごと（9歳以下・10〜11・12〜13・14〜15・16〜17歳）の上位10名が<b>区分決勝</b>。</li>
+    <li>年齢は10/30時点の満年齢。決勝・区分決勝は棄権できない。</li></ul></div>
+  <div class="ib"><h3>日ごとの時間（二次要項）</h3>${D.meet.daySchedule.map((s, i) =>
+    `<div class="kv"><span>${DAYLBL[i]}</span><b>開門 ${s[0]} · 予選 ${s[1]}〜${s[2]} · 決勝 ${s[3]}〜${s[4]} · 閉門 ${s[5]}</b></div>`).join("")}</div>
+  <div class="ib"><h3>件数の照合</h3>
+    <div class="kv"><span>選手</span><b class="ok">${D.swimmers.length.toLocaleString()}名 ＝ 公式 ${off.swimmers.toLocaleString()}名 ✓</b></div>
+    <div class="kv"><span>団体</span><b class="ok">${D.teams.length} ＝ 公式 ${off.teams} ✓</b></div>
+    <div class="kv"><span>予選の結果</span><b>${c.haveEvents} / ${c.entryEvents} 種目（組数が公式どおり ${c.heatOk}）</b></div>
+    <div class="kv"><span>申込種目</span><b class="${done ? (c.entries === off.entries ? "ok" : "ng") : ""}">${c.entries.toLocaleString()}${done ? (c.entries === off.entries ? " ＝ 公式 " + off.entries.toLocaleString() + " ✓" : " ≠ 公式 " + off.entries.toLocaleString()) : "（全種目の予選が終わると公式の " + off.entries.toLocaleString() + " と照合）"}</b></div>
+    <div class="kv"><span>性別</span><b>${KNOWN_G.toLocaleString()}名が判明</b></div>
+    ${c.unmatched ? `<div class="kv"><span>未照合</span><b>${c.unmatched}行（名前・所属が選手番号一覧と一致しない）</b></div>` : ""}
+    ${c.warnings.length ? `<div class="kv"><span>注意</span><b>${c.warnings.map(esc).join("<br>")}</b></div>` : ""}
+    <p style="margin-top:6px">選手番号 No.1832 は一覧で空欄（欠番）。「栄東」は同じ略称の別団体が2つあります。</p></div>
+  <div class="ib"><h3>データの出どころ</h3><ul>
+    <li>選手番号一覧表（10/23）・競技日程・二次要項・招待選手出場予定：<a href="https://tokyo-sc.com/event/syotaikirokukai/" target="_blank" rel="noopener">東京スイミングセンター 大会ページ</a></li>
+    <li>結果・決勝スタートリスト：<a href="https://tokyo-swim.org/" target="_blank" rel="noopener">東京都水泳協会</a>が種目ごとに公開するPDFを、およそ5分おきに取り込みます。${D.updated ? "最終確認 " + esc(D.updated.replace("T", " ").slice(5, 16)) : ""}</li>
+    <li>予選のスタートリストは公開されません。予選の組・レーンは結果が出たときに分かります。</li></ul></div>`;
+  return h;
+}
+
+/* ---------- 描画とイベント ---------- */
+function render(){
+  document.querySelectorAll(".tab").forEach(b => { b.classList.toggle("on", b.dataset.tab === ST.tab); b.setAttribute("aria-current", b.dataset.tab === ST.tab ? "page" : "false"); });
+  const v = {sw: viewSw, tm: viewTm, pg: viewPg, iv: viewIv, in: viewIn}[ST.tab];
+  M.innerHTML = v() + `<div class="ft">非公式のページです。正式な内容は大会の公式発表をご確認ください。<br>転載はご遠慮ください。<br>© 2026 gyojin600m1<div class="ct" id="ct"></div></div>`;
+  count();
+}
+function go(tab){ ST.tab = tab; try { localStorage.setItem("tsc26:tab", tab); } catch(_){} render(); window.scrollTo(0, 0); }
+document.getElementById("tabs").addEventListener("click", e => {
+  const b = e.target.closest(".tab"); if(!b) return;
+  if(b.dataset.tab === ST.tab){ if(ST.tab === "tm") ST.team = null; if(ST.tab === "pg") ST.ev = null; }
+  go(b.dataset.tab);
+});
+M.addEventListener("click", e => {
+  const t = e.target.closest("button"); if(!t || !M.contains(t)) return;
+  if(t.dataset.sw){
+    const no = +t.dataset.sw; ST.open.has(no) ? ST.open.delete(no) : ST.open.add(no);
+    const y = t.getBoundingClientRect().top; render();
+    const nb = M.querySelector(`[data-sw="${no}"]`); if(nb) window.scrollBy(0, nb.getBoundingClientRect().top - y);
+    return;
+  }
+  if(t.dataset.team != null){ ST.team = +t.dataset.team; go("tm"); return; }
+  if(t.dataset.ev){ ST.from = ST.tab; ST.ev = +t.dataset.ev; ST.evq = ""; ST.evSort = "rank"; ST.day = P[ST.ev].day - 1; go("pg"); return; }
+  if(t.dataset.go){ const no = +t.dataset.go; ST.q = String(no); ST.g = "all"; ST.open = new Set([no]); ST.lim = 60; go("sw"); return; }
+  if(t.dataset.g){ ST.g = t.dataset.g; ST.lim = 60; render(); return; }
+  if(t.dataset.day != null){ ST.day = +t.dataset.day; render(); return; }
+  if(t.dataset.sort){ ST.evSort = t.dataset.sort; render(); return; }
+  if(t.id === "more"){ ST.lim += 120; render(); return; }
+  if(t.id === "back"){ if(ST.tab === "tm") ST.team = null; if(ST.tab === "pg") ST.ev = null; render(); window.scrollTo(0, 0); return; }
+  if(t.id === "qx"){ ST.q = ""; ST.lim = 60; render(); M.querySelector("#q").focus(); return; }
+  if(t.id === "tqx"){ ST.tq = ""; render(); M.querySelector("#tq").focus(); return; }
+  if(t.id === "evqx"){ ST.evq = ""; render(); M.querySelector("#evq").focus(); return; }
+});
+let typing = null;
+M.addEventListener("input", e => {
+  const id = e.target.id; if(!["q", "tq", "evq"].includes(id)) return;
+  clearTimeout(typing);
+  typing = setTimeout(() => {
+    const pos = e.target.selectionStart;
+    if(id === "q"){ ST.q = e.target.value; ST.lim = 60; } else if(id === "tq") ST.tq = e.target.value; else ST.evq = e.target.value;
+    render();
+    const el = M.querySelector("#" + id); if(el){ el.focus(); try { el.setSelectionRange(pos, pos); } catch(_){} }
+  }, 160);
+});
+
+/* ---------- ヘッダーの速報表示 ---------- */
+(function(){
+  if(!LIVE_ANY) return;
+  const ti = todayIdx(), u = D.updated ? D.updated.replace("T", " ").slice(5, 16).replace("-", "/") : "";
+  document.getElementById("sub").innerHTML = `第57回 東京SC優秀選手招待 · 結果取込 ${esc(u)}` + (ti >= 0 ? '<span class="live"><i></i>速報中</span>' : "");
+})();
+
+/* ---------- 閲覧カウンター（公開ページのときだけ） ---------- */
+let counted = false;
+function count(){
+  const el = document.getElementById("ct");
+  if(!el || location.protocol !== "https:") return;
+  const K = "cnt:" + COUNTER_NS, today = new Date().toISOString().slice(0, 10);
+  let hit = true;
+  try { hit = localStorage.getItem(K) !== today; } catch(_){ hit = !counted; }
+  const url = "https://abacus.jasoncameron.dev/" + (hit && !counted ? "hit" : "get") + "/" + COUNTER_NS + "/views";
+  if(hit){ try { localStorage.setItem(K, today); } catch(_){} counted = true; }
+  fetch(url).then(r => r.json()).then(d => {
+    if(typeof d?.value === "number") el.textContent = "👀 " + d.value + " 回閲覧";
+    else if(url.indexOf("/get/") > 0) return fetch(url.replace("/get/", "/hit/")).then(r => r.json())
+      .then(d2 => { if(typeof d2?.value === "number") el.textContent = "👀 " + d2.value + " 回閲覧"; });
+  }).catch(() => {});
+}
+
+/* ---------- 新しい結果のお知らせ（公開ページで大会期間中だけ） ----------
+   画面を勝手に読み直すと見ている途中で飛ぶので、知らせてタップで更新してもらう。 */
+(function(){
+  if(!/^https?:$/.test(location.protocol) || !D.version) return;
+  const btn = document.getElementById("upd");
+  btn.addEventListener("click", () => location.reload());
+  const check = () => {
+    const ti = todayIdx(); if(ti < 0 && jstNow().date > D.meet.dates[4]) return;
+    fetch("version.json?t=" + Date.now(), {cache: "no-store"}).then(r => r.json())
+      .then(v => { if(v && v.v && v.v !== D.version) btn.hidden = false; }).catch(() => {});
+  };
+  setInterval(check, 90e3);
+  document.addEventListener("visibilitychange", () => { if(!document.hidden) check(); });
+})();
+
+render();
+</script>
+</body>
+</html>

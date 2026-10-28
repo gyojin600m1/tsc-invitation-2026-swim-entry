@@ -1,0 +1,56 @@
+name: pages
+# ふだんは Mac の見張り（watch/update.py）が取り込んで push し、ここは公開だけ行う。
+# Mac が止まっているときは、スマホから Actions → pages → Run workflow で取り込みから実行できる。
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+    inputs:
+      import:
+        description: '公式PDFからここで取り込む'
+        type: boolean
+        default: true
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+concurrency:
+  group: pages
+  cancel-in-progress: false
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+      - if: github.event_name == 'workflow_dispatch' && inputs.import
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - if: github.event_name == 'workflow_dispatch' && inputs.import
+        name: Import official results
+        run: |
+          pip install 'pdfplumber>=0.11,<0.12'
+          python tools/live_update.py
+          if [ -n "$(git status --porcelain data/live.json index.html version.json)" ]; then
+            git config user.name 'github-actions[bot]'
+            git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+            git add data/live.json index.html version.json
+            git commit -m '速報を更新（手動）'
+            git push origin HEAD:main
+          fi
+      - uses: actions/configure-pages@v5
+      - name: Prepare public files
+        run: |
+          mkdir public
+          cp index.html version.json public/
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: public
+      - uses: actions/deploy-pages@v4
+        id: deployment

@@ -1,0 +1,11 @@
+# 公式PDF・辞書（再配布しない。tools/prepare.py と build_yomi.py の入力）
+src/
+# 昨年のPDFで作る試験用ページ
+test2025/
+.claude/
+__pycache__/
+watch/log.txt
+watch/launchd.*.log
+# 手元用の調査メモと名簿CSV
+調査メモ.md
+data/選手番号一覧_*.csv
