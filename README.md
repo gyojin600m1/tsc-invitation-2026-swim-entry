@@ -3,7 +3,9 @@
 2026年10月30日(金)〜11月3日(火・祝)／東京アクアティクスセンター（50m・10レーン）
 ※10月29日(木)は公式練習日
 
-公開URL（予定）: https://gyojin600m1.github.io/tsc-invitation-2026-swim-entry/
+公開URL: https://gyojin600m1.github.io/tsc-invitation-2026-swim-entry/
+
+速報の見張り: `~/Library/LaunchAgents/com.fukuda.swim.tsc-invitation-2026.plist`（毎分 `watch/update.py`。記録は `watch/log.txt`）
 
 `index.html` 1ファイルで動く。外部への通信は、閲覧カウンター（Abacus）と、同じ場所の `version.json`（新しい結果のお知らせ用）だけ。
 
