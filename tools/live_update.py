@@ -153,6 +153,9 @@ def main():
         return now.hour * 60 + now.minute >= end_of[p["no"]] - 2
 
     links = None if args.base else discover(state, log)
+    # 記事のリンクには打ち間違いと抜けがある（2026: 72→108.pdf、117→009.pdf、「S093pdf」、129・130・144 は無い）。
+    # 記事に無い番号は、記事のPDFと同じフォルダの決まった名前を見に行く。中身は見出しの照合で確かめる。
+    folder = args.base or (links and next(iter(links.values())).rsplit("/", 1)[0] + "/") or GUESS_BASE
     want = []
     for p in base["program"]:
         if p["round"] in ("決勝", "区分決勝") and ended(progs[p["from"]]):
@@ -161,12 +164,7 @@ def main():
             want.append(("result", p["no"]))
     targets = []
     for kind, no in want:
-        if links is not None:
-            url = links.get((kind, no))
-            if not url:
-                continue
-        else:
-            url = (args.base or GUESS_BASE) + ("S" if kind == "start" else "") + "%03d.pdf" % no
+        url = (links or {}).get((kind, no)) or folder + ("S" if kind == "start" else "") + "%03d.pdf" % no
         rec = live["programs"].get(str(no), {}).get(kind)
         # 取り込み済みのPDFは訂正だけ確かめればよいので間を空ける（当日5分・前日まで30分）。
         # まだ出ていないPDFは毎回見に行く。
