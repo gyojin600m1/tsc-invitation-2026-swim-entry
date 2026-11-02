@@ -3,6 +3,8 @@
 東京都水泳協会が公開する第56回(2025)のPDFで列位置を確かめた。
   結果:       順位@34 組/水路@63 加盟@101 氏名@140 所属@207 生年@303 学年@351 記録@437〜 反応(@514〜
   スタートリスト: 組@36 水路@64(補欠@50) 加盟@83 登録No@144 氏名@177 ヨミガナ@260 所属名@330 学年@448 ｴﾝﾄﾘｰﾀｲﾑ@481
+2026年は結果の「学年」の列が「年齢」。11/2 から、氏名の約9pt下に半角カナの行が入り、記録・反応時間はその行に出る
+（ラップはさらに約9pt下）。
 """
 import io, logging, re, unicodedata
 import pdfplumber
@@ -11,6 +13,7 @@ logging.disable(logging.WARNING)
 HEAD = re.compile(r"競技No\.\s*:\s*(\d+)\s+(男子|女子)\s+(\d+m)\s+(\S+)\s+(予選|決勝|タイム決勝)\s*$")
 TIME = re.compile(r"^(?:\d+:)?\d{1,2}\.\d{2}$")
 NOTES = ("棄権", "失格", "記録なし", "途中棄権", "DNS", "DSQ", "DQ")
+HANKANA = re.compile(r"[ｦ-ﾟ]+")
 
 
 def _nfkc(s):
@@ -73,12 +76,16 @@ def parse_result(blob):
             words = [w for ws in L.values() for w in ws]
             anchors = sorted((w for w in words if 50 <= w["x0"] < 100 and w["top"] > 175
                               and re.fullmatch(r"\d+/\d+", w["text"])), key=lambda w: w["top"])
-            for a in anchors:
+            for i, a in enumerate(anchors):
                 y = a["top"]
+                nxt = anchors[i + 1]["top"] if i + 1 < len(anchors) else y + 99
                 row = [w for w in words if abs(w["top"] - y) < 2]
                 val = lambda lo, hi: " ".join(w["text"] for w in row if lo <= w["x0"] < hi)
-                # 記録・反応時間・棄権は同じ行か、1pt下にずれて出ることがある。ラップは約9pt下なので拾わない。
-                block = [w for w in words if y - 2 <= w["top"] < y + 5 and 420 <= w["x0"] < 600]
+                # 氏名の下に半角カナの行があれば、記録・反応時間・棄権はその行に出る。
+                # 無ければ同じ行か1pt下。どちらでもラップはさらに約9pt下なので拾わない。
+                sub = [w for w in words if y + 6 <= w["top"] < min(y + 12, nxt - 2) and 139 <= w["x0"] < 206]
+                kana = " ".join(w["text"] for w in sub) if sub and all(HANKANA.fullmatch(w["text"]) for w in sub) else ""
+                block = [w for w in words if y - 2 <= w["top"] < (y + 12 if kana else y + 5) and 420 <= w["x0"] < 600]
                 times = [w["text"] for w in block if TIME.fullmatch(w["text"]) and w["x0"] < 512]
                 notes = [w["text"] for w in block if any(n in w["text"] for n in NOTES)]
                 rt = "".join(w["text"] for w in block if w["x0"] >= 512).strip("()")
@@ -93,6 +100,7 @@ def parse_result(blob):
                     "time": times[0] if times else "",
                     "note": " ".join(dict.fromkeys(notes)),
                     "rt": rt if re.fullmatch(r"-?\d+\.\d+", rt or "") else "",
+                    "kana": _nfkc(kana),
                 })
                 if len(times) > 1:
                     raise ValueError("記録が2つある: %s %s" % (rows[-1]["name"], times))

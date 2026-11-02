@@ -42,6 +42,7 @@ def main(argv=None):
     # 速報を画面用に詰める
     L = {}
     gender, conflict, kana = {}, set(), {}
+    age = lambda g: g + "歳" if g.isdigit() else g   # 2026年のPDFは「学年」ではなく「年齢」の列
     for no_s, rec in sorted(live.get("programs", {}).items(), key=lambda x: int(x[0])):
         p = progs[int(no_s)]
         out = {}
@@ -50,10 +51,12 @@ def main(argv=None):
             rows = []
             for x in r["rows"]:
                 sw = x["sw"] if x["sw"] in nos else None
-                row = [sw, x["rank"], x["heat"], x["lane"], x["time"], x["note"], x["grade"], x["yob"]]
+                row = [sw, x["rank"], x["heat"], x["lane"], x["time"], x["note"], age(x["grade"]), x["yob"]]
                 if sw is None:
                     row += [x["name"], x["team"]]
                 rows.append(row)
+                if sw is not None and x.get("kana"):
+                    kana.setdefault(sw, x["kana"])   # 11/2 からは結果にもフリガナがある（検索だけに使う）
             out["r"] = rows
             out["ru"] = r["url"]
             out["rg"] = r["gen"]
@@ -62,7 +65,7 @@ def main(argv=None):
             rows = []
             for x in s["rows"]:
                 sw = x["sw"] if x["sw"] in nos else None
-                row = [sw, x["heat"], -1 if x["reserve"] else x["lane"], x["entry"], x["grade"]]
+                row = [sw, x["heat"], -1 if x["reserve"] else x["lane"], x["entry"], age(x["grade"])]
                 if sw is None:
                     row += [x["name"], x["team"]]
                 rows.append(row)
